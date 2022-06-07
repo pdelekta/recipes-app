@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <title>Recipes</title>
-    <script defer src="./js/main.js"></script>
+    <script defer src="./js/recipe.js"></script>
 </head>
 <body>
     <div class="container-recipepage">
@@ -27,15 +27,15 @@
             <div class="main-content">
                 <div class="recipe-header">
                     <div class="recipe-header__text">
-                        <div class="recipe-header__dish-type">Main course</div>
-                        <h2 class="recipe-header__title">Chicken paprikash</h2>
-                        <div class="recipe-header__meal-type">
+                        <div class="recipe-header__dish-type" id="dish-type"></div>
+                        <h2 class="recipe-header__title" id="recipe-title"></h2>
+                        <div class="recipe-header__meal-type" id="meal-type">
                             <svg><use href="#meal-type-icon"></use></svg>
-                            <span class="meal-type__value">Lunch/dinner</span>
+                            <span class="meal-type__value"></span>
                         </div>
                     </div>
                     <div class="recipe-header__image">
-                        <img src="graphics/chicken paprikash.jpg" />
+                        <img id="recipe-image" />
                     </div>
                 </div>
                 <div class="recipe-instructions">
@@ -60,42 +60,42 @@
         <div class="right-column">
             <div class="recipe-details">
                 <div class="recipe-details__content">
+                    <div class="recipe-details__navigation">
+                        <span class="navigation__element navigation__element--active" id="recipe-ingredients">
+                            <svg>
+                                <use href="#cart-icon"></use>
+                            </svg>
+                        </span>
+                        <span class="navigation__element" id="recipe-nutrients">
+                            <svg>
+                                <use href="#nutrients-icon"></use>
+                            </svg>
+                        </span>
+                    </div>
                     <div class="properties">
                         <span class="property">
                             <svg>
                                 <use href="#serve-icon"></use>
                             </svg>
-                            <span class="property__value">4 servings</span>
+                            <span class="property__value" id="servings-value"></span>
                         </span>
                         <span class="property">
                             <svg>
                                 <use href="#calories-icon"></use>
                             </svg>
-                            <span class="property__value">892 calories</span>
+                            <span class="property__value" id="calories-value"></span>
                         </span>
                         <span class="property">
                             <svg>
                                 <use href="#timer-icon"></use>
                             </svg>
-                            <span class="property__value">60 minutes</span>
+                            <span class="property__value" id="total-time-value"></span>
                         </span>
                     </div>
-                </div>
-                <div class="recipe-details__navigation">
-                    <span class="navigation__element navigation__element--active" id="recipe-ingredients">
-                        <svg>
-                            <use href="#cart-icon"></use>
-                        </svg>
-                    </span>
-                    <span class="navigation__element" id="recipe-nutrients">
-                        <svg>
-                            <use href="#nutrients-icon"></use>
-                        </svg>
-                    </span>
+                    <div id="variable-content"></div>
                 </div>
             </div>
         </div>
-    </div>
     <svg style="display: none">
         <symbol id="serve-icon" viewBox="0 0 297 297">
             <path d="M281.346,202.737C277.872,140.813,231.86,90.065,172.13,79.315c0.859-2.521,1.332-5.22,1.332-8.027  c0-13.764-11.198-24.961-24.962-24.961s-24.962,11.197-24.962,24.961c0,2.808,0.473,5.505,1.331,8.026  C65.141,90.063,19.134,140.813,15.66,202.735C6.464,206.54,0,215.406,0,225.712c0,13.764,11.53,24.961,25.702,24.961h245.596  c14.172,0,25.702-11.197,25.702-24.961C297,215.409,290.538,206.544,281.346,202.737z M142.576,71.288  c0-3.266,2.657-5.923,5.924-5.923s5.924,2.657,5.924,5.923c0,3.267-2.657,5.924-5.924,5.924S142.576,74.555,142.576,71.288z   M148.5,96.25c59.666,0,108.774,46.064,113.626,104.5H34.874C39.726,142.314,88.834,96.25,148.5,96.25z M271.298,231.635H25.702  c-3.611,0-6.664-2.713-6.664-5.923c0-3.211,3.053-5.924,6.664-5.924h245.596c3.611,0,6.664,2.713,6.664,5.924  C277.962,228.922,274.909,231.635,271.298,231.635z"/>
@@ -222,27 +222,31 @@
             <path d="M512 896a320 320 0 100-640 320 320 0 000 640zm0 64a384 384 0 110-768 384 384 0 010 768z"/><path d="M512 320a32 32 0 0132 32l-.512 224a32 32 0 11-64 0L480 352a32 32 0 0132-32z"/><path d="M448 576a64 64 0 10128 0 64 64 0 10-128 0zM544 128v128h-64V128h-96a32 32 0 010-64h256a32 32 0 110 64h-96z"/>
         </symbol>
     </svg>
-    <template id="recipe-ingredients">
+    <template id="recipe-ingredients-template">
         <div class="ingredients">
             <span class="ingredients__title">Ingredients</span>
             <div class="ingredients__list">
-                <span class="ingredient">
-                    <input type="checkbox" class="ingredient__checkbox" />
-                    <label class="ingredient__label"></label>
-                </span>
             </div>
         </div>
     </template>
-    <template id="recipe-nutrients">
+    <template id="recipe-ingredient-template">
+        <span class="ingredient">
+            <input type="checkbox" class="ingredient__checkbox" />
+            <label class="ingredient__label"></label>
+        </span>
+    </template>
+    <template id="recipe-nutrients-template">
         <div class="nutrients">
             <span class="nutrients__title">Nutrients</span>
             <div class="nutrients__list">
-                <span class="nutrient">
-                    <span class="nutrient__label"></span>
-                    <span class="nutrient__value"></span>
-                </span>
             </div>
         </div>
+    </template>
+    <template id="recipe-nutrient-template">
+        <span class="nutrient">
+            <span class="nutrient__label"></span>
+            <span class="nutrient__value"></span>
+        </span>
     </template>
 </body>
 </html>

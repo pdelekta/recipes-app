@@ -45,7 +45,7 @@ body {
 
 .nav-bar__search-form {
     width: 100%;
-    max-width: 560px;
+    max-width: 520px;
 }
 
 .nav-bar__search-input {
@@ -307,11 +307,11 @@ body {
 }
 
 .left-column {
-    width: 70%;
+    width: 65%;
 }
 
 .right-column {
-    width: 30%;
+    width: 35%;
     display: flex;
     padding: 10px 40px 10px 10px;
     position: sticky;
@@ -325,7 +325,6 @@ body {
     padding: 10px;
     display: flex;
     flex-direction: column;
-    gap: 20px;
 }
 
 .properties {
@@ -395,6 +394,7 @@ body {
     border-radius: 50%;
     width: 1.3rem;
     height: 1.3rem;
+    flex-shrink: 0;
     cursor: pointer;
     position: relative;
     transition: background .05s ease-in-out, color .1s ease-in-out, border-color .1s ease-in-out
