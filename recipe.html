@@ -19,23 +19,106 @@
                     Recipes.
                 </a>
                 <div class="nav-bar__search">
-                    <form id="search-form" class="nav-bar__search-form">
-                        <input type="text" id="search-input" class="nav-bar__search-input" placeholder="Search recipes" />
+                    <form id="search-form" class="nav-bar__search-form" autocomplete="off">
+                        <input type="text" id="search-input" class="nav-bar__search-input" placeholder="Search recipes..." />
                     </form>
+                    <div class="nav-bar__search-results" id="search-results">
+                        <ul class="search-results__list">
+                            <li>
+                                <a href="" class="search-result">
+                                    <img src="graphics/pasta-min.jpg" class="search-result__image">
+                                    <div class="search-result__content">
+                                        <div class="search-result__main-text">
+                                            <h3 class="search-result__title">Testowy tytuł, taki bardzo turbo długi tytuł to będzie że szok</h3>
+                                            <span class="search-result__dish-type">Salad</span>
+                                        </div>
+                                        <span class="search-result__servings">4 servings</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="" class="search-result">
+                                    <img src="graphics/pasta-min.jpg" class="search-result__image">
+                                    <div class="search-result__content">
+                                        <div class="search-result__main-text">
+                                            <h3 class="search-result__title">Testowy tytuł</h3>
+                                            <span class="search-result__dish-type">Salad</span>
+                                        </div>
+                                        <span class="search-result__servings">4 servings</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="" class="search-result">
+                                    <img src="graphics/pasta-min.jpg" class="search-result__image">
+                                    <div class="search-result__content">
+                                        <div class="search-result__main-text">
+                                            <h3 class="search-result__title">Testowy tytuł</h3>
+                                            <span class="search-result__dish-type">Salad</span>
+                                        </div>
+                                        <span class="search-result__servings">4 servings</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="" class="search-result">
+                                    <img src="graphics/pasta-min.jpg" class="search-result__image">
+                                    <div class="search-result__content">
+                                        <div class="search-result__main-text">
+                                            <h3 class="search-result__title">Testowy tytuł</h3>
+                                            <span class="search-result__dish-type">Salad</span>
+                                        </div>
+                                        <span class="search-result__servings">4 servings</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="" class="search-result">
+                                    <img src="graphics/pasta-min.jpg" class="search-result__image">
+                                    <div class="search-result__content">
+                                        <div class="search-result__main-text">
+                                            <h3 class="search-result__title">Testowy tytuł</h3>
+                                            <span class="search-result__dish-type">Salad</span>
+                                        </div>
+                                        <span class="search-result__servings">4 servings</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="" class="search-result">
+                                    <img src="graphics/pasta-min.jpg" class="search-result__image">
+                                    <div class="search-result__content">
+                                        <div class="search-result__main-text">
+                                            <h3 class="search-result__title">Testowy tytuł</h3>
+                                            <span class="search-result__dish-type">Salad</span>
+                                        </div>
+                                        <span class="search-result__servings">4 servings</span>
+                                    </div>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </nav>
             <div class="main-content">
                 <div class="recipe-header">
                     <div class="recipe-header__text">
-                        <div class="recipe-header__dish-type" id="dish-type"></div>
-                        <h2 class="recipe-header__title" id="recipe-title"></h2>
+                        <div class="recipe-header__dish-type" id="dish-type">
+                            <span class="skeleton-line--short skeleton" style="margin-bottom: 14px"></span>
+                        </div>
+                        <h2 class="recipe-header__title" id="recipe-title">
+                            <span class="skeleton-title skeleton"></span>
+                            <span class="skeleton-title skeleton"></span>
+                        </h2>
                         <div class="recipe-header__meal-type">
                             <svg><use href="#meal-type-icon"></use></svg>
-                            <span class="meal-type__value" id="meal-type"></span>
+                            <span class="meal-type__value" id="meal-type">
+                                <span class="skeleton-line--short skeleton"></span>
+                            </span>
                         </div>
                     </div>
                     <div class="recipe-header__image">
-                        <img id="recipe-image" />
+                        <img id="recipe-image" class="skeleton" />
                     </div>
                 </div>
                 <div class="recipe-instructions">
@@ -77,22 +160,42 @@
                             <svg>
                                 <use href="#serve-icon"></use>
                             </svg>
-                            <span class="property__value" id="servings-value"></span>
+                            <span class="property__value" id="servings-value">
+                                <span class="skeleton skeleton-line"></span>
+                            </span>
                         </span>
                         <span class="property">
                             <svg>
                                 <use href="#calories-icon"></use>
                             </svg>
-                            <span class="property__value" id="calories-value"></span>
+                            <span class="property__value" id="calories-value">
+                                <span class="skeleton skeleton-line"></span>
+                            </span>
                         </span>
                         <span class="property">
                             <svg>
                                 <use href="#timer-icon"></use>
                             </svg>
-                            <span class="property__value" id="total-time-value"></span>
+                            <span class="property__value" id="total-time-value">
+                                <span class="skeleton skeleton-line"></span>
+                            </span>
                         </span>
                     </div>
-                    <div id="variable-content"></div>
+                    <div id="variable-content">
+                        <div class="skeleton-box">
+                            <span class="skeleton-title skeleton title-margin"></span>
+                            <span class="skeleton-line skeleton"></span>
+                            <span class="skeleton-line skeleton"></span>
+                            <span class="skeleton-line skeleton"></span>
+                            <span class="skeleton-line skeleton"></span>
+                            <span class="skeleton-line skeleton"></span>
+                            <span class="skeleton-line skeleton"></span>
+                            <span class="skeleton-line skeleton"></span>
+                            <span class="skeleton-line skeleton"></span>
+                            <span class="skeleton-line skeleton"></span>
+                            <span class="skeleton-line skeleton"></span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

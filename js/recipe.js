@@ -21,6 +21,8 @@ const recipeTitleSpan = document.getElementById('recipe-title');
 const mealTypeSpan = document.getElementById('meal-type');
 const recipeImage = document.getElementById('recipe-image');
 const defaulListType = 'recipe-ingredients-template';
+const searchInputElement = document.getElementById('search-input');
+const searchResultsElement = document.getElementById('search-results');
 
 const options = {
     method: 'GET',
@@ -29,32 +31,6 @@ const options = {
         'X-RapidAPI-Key': '011c647cf0msh349d44b30e57cdep13bcb5jsn26aa5f532a29'
     }
 };
-
-if(recipesArray) {
-    recipesArray.forEach(element => {
-        if(element.q === query) {
-            recipes = element;
-        }
-    })
-}
-
-if(Object.keys(recipes).length === 0 && Object.getPrototypeOf(recipes) === Object.prototype) {
-    if(query) {
-        fetch(`https://edamam-recipe-search.p.rapidapi.com/search?q=${query}`, options)
-            .then(response => response.json())
-            .then(response => {
-                recipes = response;
-                recipesArray.push(recipes);
-                save();
-                firstRecipe = recipes.hits[0].recipe;
-                renderAll();
-            })
-            .catch(err => console.error(err));
-    }
-    } else {
-        firstRecipe = recipes.hits[0].recipe;
-        renderAll();
-    }
 
 function save() {
     localStorage.setItem(LOCAL_STORAGE_RECIPE_KEY, JSON.stringify(recipesArray));
@@ -139,7 +115,8 @@ function renderAll() {
     renderRecipeDetails(defaulListType); //Load default ListType
 }
 
-recipeDetailsNavigation.addEventListener('click', e => {
+function addNavigationListener() {
+    recipeDetailsNavigation.addEventListener('click', e => {
     const navigationElement = e.target.closest('.navigation__element')
     if(e.target.classList.contains('navigation__element') || Boolean(navigationElement)) {
         const type = `${navigationElement.id}-template`;
@@ -147,4 +124,49 @@ recipeDetailsNavigation.addEventListener('click', e => {
         addActiveClass(navigationElement);
         renderRecipeDetails(type);
     }
+})
+}
+
+if(recipesArray) {
+    recipesArray.forEach(element => {
+        if(element.q === query) {
+            recipes = element;
+        }
+    })
+}
+
+if(Object.keys(recipes).length === 0 && Object.getPrototypeOf(recipes) === Object.prototype) {
+    if(query) {
+        fetch(`https://edamam-recipe-search.p.rapidapi.com/search?q=${query}`, options)
+            .then(response => response.json())
+            .then(response => {
+                recipes = response;
+                if(recipes.hits.length > 0) {
+                    recipesArray.push(recipes);
+                    save();
+                    firstRecipe = recipes.hits[0].recipe;
+                    renderAll();
+                    addNavigationListener()
+                } else {
+                    console.log('No recipe found')
+                }
+            })
+            .catch(err => console.error(err));
+    }
+} else {
+    if(recipes.hits.length > 0) {
+        firstRecipe = recipes.hits[0].recipe;
+        renderAll();
+        addNavigationListener()
+    } else {
+        console.log('No recipe found');
+    }
+}
+
+searchInputElement.addEventListener('focusin', () => {
+    searchResultsElement.classList.add('nav-bar__search-results--active');
+})
+
+searchInputElement.addEventListener('focusout', () => {
+    searchResultsElement.classList.remove('nav-bar__search-results--active');
 })
