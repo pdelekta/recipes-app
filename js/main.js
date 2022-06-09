@@ -4,7 +4,7 @@ let ingredientLines = [];
 let nutrients = {};
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
-const query = urlParams.get('q');
+const query = urlParams.get('q').toLowerCase();
 const resultIndex = urlParams.get('i') || 0;
 
 let recipesArray = JSON.parse(localStorage.getItem(LOCAL_STORAGE_RECIPE_KEY)) || [];
@@ -132,6 +132,7 @@ function addNavigationListener() {
 }
 
 function renderSearchResult(searchQuery) {
+    searchQuery = searchQuery.toLowerCase();
     clearElement(searchResultsList);
     searchResult = [];
     if(recipesArray) {
