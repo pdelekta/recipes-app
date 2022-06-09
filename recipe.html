@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <title>Recipes</title>
-    <script defer src="./js/recipe.js"></script>
+    <script defer src="./js/main.js"></script>
 </head>
 <body>
     <div class="container-recipepage">
@@ -21,83 +21,11 @@
                 <div class="nav-bar__search">
                     <form id="search-form" class="nav-bar__search-form" autocomplete="off">
                         <input type="text" id="search-input" class="nav-bar__search-input" placeholder="Search recipes..." />
+                        <div class="nav-bar__search-results" id="search-results">
+                            <ul class="search-results__list" id="search-results-list">
+                            </ul>
+                        </div>
                     </form>
-                    <div class="nav-bar__search-results" id="search-results">
-                        <ul class="search-results__list">
-                            <li>
-                                <a href="" class="search-result">
-                                    <img src="graphics/pasta-min.jpg" class="search-result__image">
-                                    <div class="search-result__content">
-                                        <div class="search-result__main-text">
-                                            <h3 class="search-result__title">Testowy tytuł, taki bardzo turbo długi tytuł to będzie że szok</h3>
-                                            <span class="search-result__dish-type">Salad</span>
-                                        </div>
-                                        <span class="search-result__servings">4 servings</span>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="" class="search-result">
-                                    <img src="graphics/pasta-min.jpg" class="search-result__image">
-                                    <div class="search-result__content">
-                                        <div class="search-result__main-text">
-                                            <h3 class="search-result__title">Testowy tytuł</h3>
-                                            <span class="search-result__dish-type">Salad</span>
-                                        </div>
-                                        <span class="search-result__servings">4 servings</span>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="" class="search-result">
-                                    <img src="graphics/pasta-min.jpg" class="search-result__image">
-                                    <div class="search-result__content">
-                                        <div class="search-result__main-text">
-                                            <h3 class="search-result__title">Testowy tytuł</h3>
-                                            <span class="search-result__dish-type">Salad</span>
-                                        </div>
-                                        <span class="search-result__servings">4 servings</span>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="" class="search-result">
-                                    <img src="graphics/pasta-min.jpg" class="search-result__image">
-                                    <div class="search-result__content">
-                                        <div class="search-result__main-text">
-                                            <h3 class="search-result__title">Testowy tytuł</h3>
-                                            <span class="search-result__dish-type">Salad</span>
-                                        </div>
-                                        <span class="search-result__servings">4 servings</span>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="" class="search-result">
-                                    <img src="graphics/pasta-min.jpg" class="search-result__image">
-                                    <div class="search-result__content">
-                                        <div class="search-result__main-text">
-                                            <h3 class="search-result__title">Testowy tytuł</h3>
-                                            <span class="search-result__dish-type">Salad</span>
-                                        </div>
-                                        <span class="search-result__servings">4 servings</span>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="" class="search-result">
-                                    <img src="graphics/pasta-min.jpg" class="search-result__image">
-                                    <div class="search-result__content">
-                                        <div class="search-result__main-text">
-                                            <h3 class="search-result__title">Testowy tytuł</h3>
-                                            <span class="search-result__dish-type">Salad</span>
-                                        </div>
-                                        <span class="search-result__servings">4 servings</span>
-                                    </div>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
                 </div>
             </nav>
             <div class="main-content">
@@ -350,6 +278,20 @@
             <span class="nutrient__label"></span>
             <span class="nutrient__value"></span>
         </span>
+    </template>
+    <template id="search-result-element">
+        <li>
+            <a href="" class="search-result">
+                <img class="search-result__image skeleton">
+                <div class="search-result__content">
+                    <div class="search-result__main-text">
+                        <h3 class="search-result__title"></h3>
+                        <span class="search-result__dish-type"></span>
+                    </div>
+                    <span class="search-result__servings"></span>
+                </div>
+            </a>
+        </li>
     </template>
 </body>
 </html>

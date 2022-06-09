@@ -5,15 +5,17 @@ let nutrients = {};
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 const query = urlParams.get('q');
+const resultIndex = urlParams.get('i') || 0;
 
 let recipesArray = JSON.parse(localStorage.getItem(LOCAL_STORAGE_RECIPE_KEY)) || [];
 let recipes = {};
-let firstRecipe;
+let Recipe;
 
 const recipeDetailsNavigation = document.querySelector('.recipe-details__navigation');
 const recipeDetailsContainer = document.getElementById('variable-content');
 const navigationElements = document.querySelectorAll('.navigation__element');
 const servingsSpan = document.getElementById('servings-value');
+let servingText = 'servings';
 const caloriesSpan = document.getElementById('calories-value');
 const totalTimeSpan = document.getElementById('total-time-value');
 const dishTypeSpan = document.getElementById('dish-type');
@@ -23,6 +25,9 @@ const recipeImage = document.getElementById('recipe-image');
 const defaulListType = 'recipe-ingredients-template';
 const searchInputElement = document.getElementById('search-input');
 const searchResultsElement = document.getElementById('search-results');
+const searchResultsList = document.getElementById('search-results-list');
+const searchResultTemplate = document.importNode(document.getElementById('search-result-element').content, true);
+let searchResult = [];
 
 const options = {
     method: 'GET',
@@ -50,7 +55,7 @@ function renderRecipeDetails(type) {
 
     if(type === 'recipe-ingredients-template') {
         const ingredientList = recipeDetailsContent.querySelector('.ingredients__list');
-        ingredientLines = firstRecipe.ingredientLines;
+        ingredientLines = Recipe.ingredientLines;
         ingredientLines.forEach( (ingredient, index) => {
             const ingredientElement = document.importNode(document.getElementById('recipe-ingredient-template').content, true);
             const ingredientCheckbox = ingredientElement.querySelector('.ingredient__checkbox');
@@ -65,7 +70,7 @@ function renderRecipeDetails(type) {
 
     else if (type === 'recipe-nutrients-template') {
         const nutrientList = recipeDetailsContent.querySelector('.nutrients__list');
-        nutrients = firstRecipe.totalNutrients;
+        nutrients = Recipe.totalNutrients;
         Object.entries(nutrients).forEach(([, { label, quantity, unit } ]) => {
             if(quantity > 0.1 && label !== 'Energy' && unit !== 'µg') {
                 const nutrientElement = document.importNode(document.getElementById('recipe-nutrient-template').content, true);
@@ -95,18 +100,17 @@ function addActiveClass(element) {
 }
 
 function renderRecipeParameters() {
-    let servingText = 'servings';
-    if(firstRecipe.yield === 1) { servingText = 'serving'};
-    servingsSpan.innerText = `${firstRecipe.yield} ${servingText}`;
-    caloriesSpan.innerText = `${firstRecipe.calories.toFixed(0)} calories`;
-    totalTimeSpan.innerText = `${firstRecipe.totalTime} minutes`;
+    if(Recipe.yield === 1) { servingText = 'serving'};
+    servingsSpan.innerText = `${Recipe.yield} ${servingText}`;
+    caloriesSpan.innerText = `${Recipe.calories.toFixed(0)} calories`;
+    totalTimeSpan.innerText = `${Recipe.totalTime} minutes`;
 }
 
 function renderRecipeHeader() {
-    dishTypeSpan.innerText = firstRecipe.dishType;
-    recipeTitleSpan.innerText = firstRecipe.label;
-    mealTypeSpan.innerText = firstRecipe.mealType;
-    recipeImage.src = firstRecipe.image;
+    dishTypeSpan.innerText = Recipe.dishType;
+    recipeTitleSpan.innerText = Recipe.label;
+    mealTypeSpan.innerText = Recipe.mealType;
+    recipeImage.src = Recipe.image;
 }
 
 function renderAll() {
@@ -127,6 +131,34 @@ function addNavigationListener() {
 })
 }
 
+function renderSearchResult(searchQuery) {
+    clearElement(searchResultsList);
+    searchResult = [];
+    if(recipesArray) {
+        recipesArray.forEach(element => {
+            if(element.q === searchQuery) {
+                searchResult = element.hits;
+            }
+        })
+    }
+    searchResult.forEach((element, index) => {
+        const result = searchResultTemplate.cloneNode(true);
+        const resultLink = result.querySelector('.search-result');
+        resultLink.href = `recipe.html?q=${searchQuery}&i=${index}`;
+        const resultImg = result.querySelector('.search-result__image');
+        resultImg.src = element.recipe.image;
+        resultImg.alt = element.recipe.label;
+        const resultTitle = result.querySelector('.search-result__title');
+        resultTitle.innerText = element.recipe.label;
+        const resultDishType = result.querySelector('.search-result__dish-type');
+        resultDishType.innerText = element.recipe.dishType;
+        const resultServings = result.querySelector('.search-result__servings');
+        if(element.yield === 1) { servingText = 'serving'};
+        resultServings.innerText = `${element.recipe.yield} ${servingText}`;
+        searchResultsList.appendChild(result);
+    })
+}
+
 if(recipesArray) {
     recipesArray.forEach(element => {
         if(element.q === query) {
@@ -144,7 +176,7 @@ if(Object.keys(recipes).length === 0 && Object.getPrototypeOf(recipes) === Objec
                 if(recipes.hits.length > 0) {
                     recipesArray.push(recipes);
                     save();
-                    firstRecipe = recipes.hits[0].recipe;
+                    Recipe = recipes.hits[resultIndex].recipe;
                     renderAll();
                     addNavigationListener()
                 } else {
@@ -155,7 +187,7 @@ if(Object.keys(recipes).length === 0 && Object.getPrototypeOf(recipes) === Objec
     }
 } else {
     if(recipes.hits.length > 0) {
-        firstRecipe = recipes.hits[0].recipe;
+        Recipe = recipes.hits[resultIndex].recipe;
         renderAll();
         addNavigationListener()
     } else {
@@ -165,8 +197,19 @@ if(Object.keys(recipes).length === 0 && Object.getPrototypeOf(recipes) === Objec
 
 searchInputElement.addEventListener('focusin', () => {
     searchResultsElement.classList.add('nav-bar__search-results--active');
+    searchResultsElement.classList.remove('nav-bar__search-results--inactive');
 })
 
 searchInputElement.addEventListener('focusout', () => {
-    searchResultsElement.classList.remove('nav-bar__search-results--active');
+    searchResultsElement.classList.add('nav-bar__search-results--inactive');
 })
+
+searchResultsElement.addEventListener('animationend', e => {
+    if(e.target.classList.contains('nav-bar__search-results--inactive')) {
+        searchResultsElement.classList.remove('nav-bar__search-results--active');
+    }
+})
+
+searchInputElement.addEventListener('keyup', () => {
+    renderSearchResult(searchInputElement.value);
+});
