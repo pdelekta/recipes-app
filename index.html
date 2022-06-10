@@ -14,7 +14,7 @@
 <body>
     <div class="container">
         <nav class="nav-bar">
-            <a href="/" class="nav-bar__logo">
+            <a href="index.html" class="nav-bar__logo">
                 Recipes.
             </a>
             <div class="nav-bar__search">
@@ -231,6 +231,20 @@
                         <span class="search-result__dish-type"></span>
                     </div>
                     <span class="search-result__servings"></span>
+                </div>
+            </a>
+        </li>
+    </template>
+    <template id="search-skeleton-element">
+        <li>
+            <a href="" class="search-result">
+                <img class="search-result__image skeleton">
+                <div class="search-result__content">
+                    <div class="search-result__main-text">
+                        <h3 class="search-result__title"><span class="search-skeleton__title skeleton"></span></h3>
+                        <span class="search-result__dish-type"><span class="search-skeleton__line search-skeleton__line--short skeleton"></span></span>
+                    </div>
+                    <span class="search-result__servings"><span class="search-skeleton__line skeleton"></span></span>
                 </div>
             </a>
         </li>

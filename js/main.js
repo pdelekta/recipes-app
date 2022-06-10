@@ -24,11 +24,15 @@ const mealTypeSpan = document.getElementById('meal-type');
 const recipeImage = document.getElementById('recipe-image');
 const defaulListType = 'recipe-ingredients-template';
 const searchInputElement = document.getElementById('search-input');
+const searchSkeletonTemplate = document.importNode(document.getElementById('search-skeleton-element').content, true);
 const searchResultsElement = document.getElementById('search-results');
 const searchResultsList = document.getElementById('search-results-list');
 const searchResultTemplate = document.importNode(document.getElementById('search-result-element').content, true);
+const searchFormElement = document.getElementById('search-form');
 let searchResult = [];
+let searchQuery;
 
+const apiUrl= 'https://edamam-recipe-search.p.rapidapi.com/search';
 const options = {
     method: 'GET',
     headers: {
@@ -39,7 +43,7 @@ const options = {
 
 function save() {
     localStorage.setItem(LOCAL_STORAGE_RECIPE_KEY, JSON.stringify(recipesArray));
-  }
+}
 
 function clearElement(element) {
     while (element.firstChild) {
@@ -131,9 +135,16 @@ function addNavigationListener() {
 })
 }
 
-function renderSearchResult(searchQuery) {
-    searchQuery = searchQuery.toLowerCase();
+function showMessage(message = 'Recipe not found') {
+    const messageBox = document.createElement('span');
+    messageBox.className = 'search-message';
+    messageBox.innerText = message;
     clearElement(searchResultsList);
+    searchResultsList.appendChild(messageBox);
+}
+
+function getLocalSearchResult(userInput) {
+    searchQuery = userInput.toLowerCase().trim();
     searchResult = [];
     if(recipesArray) {
         recipesArray.forEach(element => {
@@ -142,6 +153,37 @@ function renderSearchResult(searchQuery) {
             }
         })
     }
+}
+
+function renderSkeletonSearchResult() {
+    clearElement(searchResultsList);
+    for (let i = 0; i < 10; i++) {
+        const skeletonElement = searchSkeletonTemplate.cloneNode(true).firstElementChild;
+        searchResultsList.appendChild(skeletonElement);
+    }
+}
+
+async function getExternalSearchResult(userInput) {
+    if(userInput && userInput.trim() !== '') {
+        renderSkeletonSearchResult();
+        try {
+            const response = await fetch(`${apiUrl}?q=${userInput}`, options);
+            const responseObject = await response.json();
+            if(responseObject.hits.length > 0) {
+                recipesArray.push(responseObject);
+                save();
+                renderSearchResult(responseObject.hits);
+            } else {
+                showMessage();
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    } else {showMessage(`input can't be empty`)};
+}
+
+function renderSearchResult(searchResult) {
+    clearElement(searchResultsList);
     searchResult.forEach((element, index) => {
         const result = searchResultTemplate.cloneNode(true);
         const resultLink = result.querySelector('.search-result');
@@ -160,6 +202,39 @@ function renderSearchResult(searchQuery) {
     })
 }
 
+function registerEventListeners() {
+    searchInputElement.addEventListener('focusin', () => {
+        searchResultsElement.classList.add('nav-bar__search-results--active');
+        searchResultsElement.classList.remove('nav-bar__search-results--inactive');
+    })
+
+    document.addEventListener('click', (e) => {
+        if(!e.target.closest('.nav-bar__search-results--active') && !e.target.classList.contains('nav-bar__search-input')) {
+            searchResultsElement.classList.add('nav-bar__search-results--inactive');
+        }
+    })
+
+    searchResultsElement.addEventListener('animationend', e => {
+        if(e.target.classList.contains('nav-bar__search-results--inactive')) {
+            searchResultsElement.classList.remove('nav-bar__search-results--active');
+        }
+    })
+
+    searchInputElement.addEventListener('input', () => {
+        clearElement(searchResultsList);
+        getLocalSearchResult(searchInputElement.value)
+        if(searchResult.length) {
+            renderSearchResult(searchResult)};
+    });
+
+    searchFormElement.addEventListener('submit', (e) => {
+        e.preventDefault();
+        getExternalSearchResult(searchInputElement.value);
+    })
+}
+
+registerEventListeners();
+
 if(recipesArray) {
     recipesArray.forEach(element => {
         if(element.q === query) {
@@ -170,7 +245,7 @@ if(recipesArray) {
 
 if(Object.keys(recipes).length === 0 && Object.getPrototypeOf(recipes) === Object.prototype) {
     if(query) {
-        fetch(`https://edamam-recipe-search.p.rapidapi.com/search?q=${query}`, options)
+        fetch(`${apiUrl}?q=${query}`, options)
             .then(response => response.json())
             .then(response => {
                 recipes = response;
@@ -192,25 +267,6 @@ if(Object.keys(recipes).length === 0 && Object.getPrototypeOf(recipes) === Objec
         renderAll();
         addNavigationListener()
     } else {
-        console.log('No recipe found');
+        console.log('Recipe not found');
     }
 }
-
-searchInputElement.addEventListener('focusin', () => {
-    searchResultsElement.classList.add('nav-bar__search-results--active');
-    searchResultsElement.classList.remove('nav-bar__search-results--inactive');
-})
-
-searchInputElement.addEventListener('focusout', () => {
-    searchResultsElement.classList.add('nav-bar__search-results--inactive');
-})
-
-searchResultsElement.addEventListener('animationend', e => {
-    if(e.target.classList.contains('nav-bar__search-results--inactive')) {
-        searchResultsElement.classList.remove('nav-bar__search-results--active');
-    }
-})
-
-searchInputElement.addEventListener('keyup', () => {
-    renderSearchResult(searchInputElement.value);
-});
