@@ -155,14 +155,6 @@ function getLocalSearchResult(userInput) {
     }
 }
 
-function renderSkeletonSearchResult() {
-    clearElement(searchResultsList);
-    for (let i = 0; i < 10; i++) {
-        const skeletonElement = searchSkeletonTemplate.cloneNode(true).firstElementChild;
-        searchResultsList.appendChild(skeletonElement);
-    }
-}
-
 async function getExternalSearchResult(userInput) {
     if(userInput && userInput.trim() !== '') {
         renderSkeletonSearchResult();
@@ -180,6 +172,14 @@ async function getExternalSearchResult(userInput) {
             console.log(error);
         }
     } else {showMessage(`input can't be empty`)};
+}
+
+function renderSkeletonSearchResult() {
+    clearElement(searchResultsList);
+    for (let i = 0; i < 6; i++) {
+        const skeletonElement = searchSkeletonTemplate.cloneNode(true).firstElementChild;
+        searchResultsList.appendChild(skeletonElement);
+    }
 }
 
 function renderSearchResult(searchResult) {
