@@ -631,6 +631,7 @@ body {
 .recipe-instructions__link {
     color: #fcbe84;
     text-decoration: none;
+    word-break: break-word;
 }
 
 .recipe-instructions__link:hover {
