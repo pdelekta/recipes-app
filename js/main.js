@@ -4,13 +4,16 @@ let ingredientLines = [];
 let nutrients = {};
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
-const query = urlParams.get('q').toLowerCase();
+const query = urlParams.get('q') || '';
+query.toLowerCase().trim();
 const resultIndex = urlParams.get('i') || 0;
 
 let recipesArray = JSON.parse(localStorage.getItem(LOCAL_STORAGE_RECIPE_KEY)) || [];
 let recipes = {};
 let Recipe;
 
+const mainContentElement = document.querySelector('.main-content');
+const rightColumnElement = document.querySelector('.right-column');
 const recipeDetailsNavigation = document.querySelector('.recipe-details__navigation');
 const recipeDetailsContainer = document.getElementById('variable-content');
 const navigationElements = document.querySelectorAll('.navigation__element');
@@ -22,6 +25,7 @@ const dishTypeSpan = document.getElementById('dish-type');
 const recipeTitleSpan = document.getElementById('recipe-title');
 const mealTypeSpan = document.getElementById('meal-type');
 const recipeImage = document.getElementById('recipe-image');
+const recipeInstructionElement = document.querySelector('.recipe-instruction');
 const defaulListType = 'recipe-ingredients-template';
 const searchInputElement = document.getElementById('search-input');
 const searchSkeletonTemplate = document.importNode(document.getElementById('search-skeleton-element').content, true);
@@ -84,8 +88,8 @@ function renderRecipeDetails(type) {
                 nutrientValue.innerText = `${quantity.toFixed(1)} ${unit}`;
                 nutrientList.appendChild(nutrientElement);
             }
-        recipeDetailsContainer.appendChild(recipeDetailsContent);
         })
+        recipeDetailsContainer.appendChild(recipeDetailsContent);
     }
 }
 
@@ -115,6 +119,7 @@ function renderRecipeHeader() {
     recipeTitleSpan.innerText = Recipe.label;
     mealTypeSpan.innerText = Recipe.mealType;
     recipeImage.src = Recipe.image;
+    recipeInstructionElement.innerHTML = `Instructions for this recipe can be found at: <a class="recipe-instructions__link" target="_blank" href="${Recipe.url}">${Recipe.url}</a>`;
 }
 
 function renderAll() {
@@ -135,22 +140,38 @@ function addNavigationListener() {
 })
 }
 
-function showMessage(message = 'Recipe not found') {
+function showMessage(message = 'Recipe not found', element, type) {
     const messageBox = document.createElement('span');
-    messageBox.className = 'search-message';
+    switch(type) {
+        case 'search':
+            messageBox.className = 'search-message';
+            break;
+        case 'recipe':
+            messageBox.className = 'search-message--recipe';
+            break;
+    }
     messageBox.innerText = message;
-    clearElement(searchResultsList);
-    searchResultsList.appendChild(messageBox);
+    clearElement(element);
+    element.appendChild(messageBox);
 }
 
 function getLocalSearchResult(userInput) {
     searchQuery = userInput.toLowerCase().trim();
     searchResult = [];
     if(recipesArray) {
-        recipesArray.forEach(element => {
-            if(element.q === searchQuery) {
-                searchResult = element.hits;
-            }
+        recipesArray.forEach((element, queryIndex) => {
+            // if(element.q.includes(searchQuery) && searchQuery) {
+            //     console.log(searchQuery);
+            //     searchResult = element.hits;
+            // }
+            element.hits.forEach((hit, hitsIndex) => {
+                if(searchResult.length > 9) return;
+                if(hit.recipe.label.toLowerCase().includes(searchQuery) && searchQuery) {
+                    hit.queryIndex = queryIndex;
+                    hit.hitsIndex = hitsIndex;
+                    searchResult.push(hit);
+                }
+            })
         })
     }
 }
@@ -162,16 +183,32 @@ async function getExternalSearchResult(userInput) {
             const response = await fetch(`${apiUrl}?q=${userInput}`, options);
             const responseObject = await response.json();
             if(responseObject.hits.length > 0) {
+                if(recipesArray.some(recipes => recipes.q === responseObject.q)) {
+                    console.log('tset');
+                    recipesArray = recipesArray.map(element => {
+                        if(element.q === responseObject.q) {
+                            console.log('nadpisało')
+                            element.hits.forEach((hit, index) => {
+                                hit.recipe.image = responseObject.hits[index].recipe.image;
+                            })
+                            return element;
+                        } else {
+                            console.log('pobrało istniejący element');
+                            return element;
+                        }
+                    })
+                } else {
                 recipesArray.push(responseObject);
+                }
                 save();
                 renderSearchResult(responseObject.hits);
             } else {
-                showMessage();
+                showMessage(undefined,searchResultsList, 'search');
             }
         } catch (error) {
             console.log(error);
         }
-    } else {showMessage(`input can't be empty`)};
+    } else {showMessage(`input can't be empty`, searchResultsList, 'search')};
 }
 
 function renderSkeletonSearchResult() {
@@ -187,7 +224,12 @@ function renderSearchResult(searchResult) {
     searchResult.forEach((element, index) => {
         const result = searchResultTemplate.cloneNode(true);
         const resultLink = result.querySelector('.search-result');
-        resultLink.href = `recipe.html?q=${searchQuery}&i=${index}`;
+        if(element.queryIndex >= 0 && element.hitsIndex >= 0) {
+            console.log('test');
+            resultLink.href = `recipe.html?q=${recipesArray[element.queryIndex].q}&i=${recipesArray[element.queryIndex].hits[element.hitsIndex].hitsIndex}`;
+        } else {
+            resultLink.href = `recipe.html?q=${searchQuery}&i=${index}`;
+        }
         const resultImg = result.querySelector('.search-result__image');
         resultImg.src = element.recipe.image;
         resultImg.alt = element.recipe.label;
@@ -229,11 +271,17 @@ function registerEventListeners() {
 
     searchFormElement.addEventListener('submit', (e) => {
         e.preventDefault();
-        getExternalSearchResult(searchInputElement.value);
+        getExternalSearchResult(searchInputElement.value.toLowerCase());
     })
 }
 
 registerEventListeners();
+
+if(!query && window.location.href.indexOf('recipe') > -1) {
+    showMessage('Query is empty, use search to find recipe.', mainContentElement, 'recipe');
+    searchInputElement.focus();
+    rightColumnElement.remove();
+}
 
 if(recipesArray) {
     recipesArray.forEach(element => {
@@ -267,6 +315,6 @@ if(Object.keys(recipes).length === 0 && Object.getPrototypeOf(recipes) === Objec
         renderAll();
         addNavigationListener()
     } else {
-        console.log('Recipe not found');
+        showMessage();;
     }
 }
