@@ -108,7 +108,7 @@ function addActiveClass(element) {
 }
 
 function renderRecipeParameters() {
-    if(Recipe.yield === 1) { servingText = 'serving'};
+    if(Recipe.yield === 1) {servingText = 'serving'};
     servingsSpan.innerText = `${Recipe.yield} ${servingText}`;
     caloriesSpan.innerText = `${Recipe.calories.toFixed(0)} calories`;
     totalTimeSpan.innerText = `${Recipe.totalTime} minutes`;
@@ -221,25 +221,26 @@ function renderSkeletonSearchResult() {
 
 function renderSearchResult(searchResult) {
     clearElement(searchResultsList);
-    searchResult.forEach((element, index) => {
+    searchResult.forEach(({ recipe, hitsIndex, queryIndex }, index) => {
         const result = searchResultTemplate.cloneNode(true);
         const resultLink = result.querySelector('.search-result');
-        if(element.queryIndex >= 0 && element.hitsIndex >= 0) {
-            console.log('test');
-            resultLink.href = `recipe.html?q=${recipesArray[element.queryIndex].q}&i=${recipesArray[element.queryIndex].hits[element.hitsIndex].hitsIndex}`;
+        if(queryIndex >= 0 && hitsIndex >= 0) {
+            resultLink.href = `recipe.html?q=${recipesArray[queryIndex].q}&i=${recipesArray[queryIndex].hits[hitsIndex].hitsIndex}`;
         } else {
             resultLink.href = `recipe.html?q=${searchQuery}&i=${index}`;
         }
         const resultImg = result.querySelector('.search-result__image');
-        resultImg.src = element.recipe.image;
-        resultImg.alt = element.recipe.label;
+        resultImg.src = recipe.image;
+        resultImg.alt = recipe.label;
         const resultTitle = result.querySelector('.search-result__title');
-        resultTitle.innerText = element.recipe.label;
+        resultTitle.innerText = recipe.label;
         const resultDishType = result.querySelector('.search-result__dish-type');
-        resultDishType.innerText = element.recipe.dishType;
+        resultDishType.innerText = recipe.dishType;
         const resultServings = result.querySelector('.search-result__servings');
-        if(element.yield === 1) { servingText = 'serving'};
-        resultServings.innerText = `${element.recipe.yield} ${servingText}`;
+        console.log(recipe.yield);
+        if(recipe.yield === 1) { servingText = 'serving'}
+        else {servingText = 'servings'};
+        resultServings.innerText = `${recipe.yield} ${servingText}`;
         searchResultsList.appendChild(result);
     })
 }
